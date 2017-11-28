@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html ng-app="todoApp" ng-controller="todoCtrl">
+<head>
+  <title><%= title %></title>
+
+  <!-- Required meta tags for bootstrap -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+  <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+
+  <!-- AngularJS -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+
+</head>
+<body>
+
+  <div class="event-main container-fluid" ng-controller="manageTodoCtrl">
+    <div class="event-header-outline">
+      <div class="row">
+        <div class="col-md-2">
+        </div>
+        <div class="event-header col-md-8">
+          <p class="event-header-title">My TodoList</p>
+          <div class="event-header-control">
+            <div class="d-flex justify-content-between" ng-if="manageOff">
+              <div>
+                <label for="selectOrder">Order By: </label>
+                <select id="selectOrder" ng-options="item.name for item in orderList" ng-model="main.selectedOrder"></select>
+              </div>
+              <div>
+                <button ng-click="switchCondition('new')">New</button>
+                <button ng-click="refreshEvents()">Refresh</button>
+                <button ng-click="switchCondition('manage')">manage</button>
+              </div>
+            </div>
+            <div class="d-flex justify-content-between" ng-if="!manageOff">
+              <div>
+                <button ng-click="switchCondition('all')">All</button>
+              </div>
+              <div>
+                <button ng-click="deleteEvents()">delete</button>
+                <button ng-click="switchCondition('manage')">exit</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="header-body-divider"></div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-2">
+      </div>
+      <div class="event-body col-md-8">
+        <div class="event-body-item d-flex justify-content-between" ng-repeat="event in events | orderBy:main.selectedOrder.value" ng-click="checkEvent(event)" ng-class="{eventBodySelected: event.checked}">
+          <div>
+            <input type="checkbox" id="event.id" name="event.id" ng-click="switchCondition(event)" ng-if="manageOff" ng-checked="event.completed">
+            <label for="event.id">{{ event.title }}</label>
+          </div>
+          <div>
+            <span class="event-item-priority">{{ event.priority }} </span>
+            <span class="event-item-close" ng-click="updateEventForm(event); $event.stopPropagation();" ng-if="!manageOff">update</span>
+            <span class="event-item-close" ng-click="deleteEvent(event); $event.stopPropagation();" ng-if="!manageOff">x</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="event-create event-form-outline" ng-if="createOff" ng-controller="newTodoCtrl">
+    <div class="row">
+      <div class="col-md-4">
+      </div>
+      <div class="event-from-body col-md-4">
+        <div class="event-form-close" ng-click="switchCondition('new')">
+          X
+        </div>
+        <form name="formCreate" class="event-form">
+          <div>
+            <label for="newTitle">Title: <span class="valid-warning" ng-if="formCreate.newTitle.$touched && formCreate.newTitle.$invalid">(Title is required!)</span><label>
+            <textarea rows="2" cols="35" maxlength="50" placeholder="Such as 'eat with family'. At most 50 words. Required to be filled." id="newTitle" name="newTitle" ng-model="newTitle" required autofocus></textarea>
+          </div>
+          <div>
+            <label for="newDetail">Detail: </label>
+            <textarea rows="3" cols="35" maxlength="200" placeholder="Such as 'Bring a gift'. At most 200 words" id="newDetail" name="newDetail" ng-model="newDetail"></textarea>
+          </div>
+          <div>
+            <label for="newPriority">Priority: </label>
+            <select size="5" id="newPriority" ng-model="newPriority">
+              <option value="1">1 (Lowest Priority)</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5 (Highest Priority)</option>
+            </select>
+          </div>
+          <div class="d-flex justify-content-around">
+            <button ng-click="switchCondition('new')">Cancel</button>
+            <button type="reset">Reset</button>
+            <button type="submit" ng-click="createEvent()">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="event-update event-form-outline" ng-show="updateOff" ng-controller="updateTodoCtrl">
+    <div class="row">
+      <div class="col-md-4">
+      </div>
+      <div class="event-form-body col-md-4">
+        <div class="event-form-close" ng-click="switchCondition('update')">
+          X
+        </div>
+        <form name="formUpdate" class="event-form">
+          <div>
+            <label for="updateCompleted">Whether completed: </label>
+            <input type="checkbox" id="updateCompleted" name="updateCompleted" ng-checked="updateCompleted">
+          </div>
+          <div>
+            <label for="updateTitle">Title: <span class="valid-warning" ng-if="formUpdate.updateTitle.$touched && formUpdate.updateTitle.$invalid">(Title is required!)</span><label>
+            <textarea rows="2" cols="35" maxlength="50" placeholder="Such as 'eat with family'. At most 50 words. Required to be filled." id="updateTitle" name="updateTitle" ng-model="updateTitle" required autofocus></textarea>
+          </div>
+          <div>
+            <label for="updateDetail">Detail: </label>
+            <textarea rows="3" cols="35" maxlength="200" placeholder="Such as 'Bring a gift'. At most 200 words" id="updateDetail" name="updateDetail" ng-model="updateDetail"></textarea>
+          </div>
+          <div>
+            <label for="updatePriority">Priority: </label>
+            <select size="5" id="updatePriority" ng-model="updatePriority">
+              <option value="1">1 (Lowest Priority)</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5 (Highest Priority)</option>
+            </select>
+          </div>
+          <div class="d-flex justify-content-around">
+            <button ng-click="switchCondition('update')">Cancel</button>
+            <button type="reset">Reset</button>
+            <button type="submit" ng-click="updateEvent()">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="/javascripts/controller.js" ></script>
+  <script src="/javascripts/service.js" ></script>
+  <script src="/javascripts/module.js" ></script>
+</body>
+</html>
