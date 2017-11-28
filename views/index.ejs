@@ -10,7 +10,10 @@
   <!-- CSS -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
   <link rel='stylesheet' href='/stylesheets/style.css' />
+
+  <!--fonts-->
   <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
   <!-- AngularJS -->
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
@@ -64,8 +67,8 @@
           </div>
           <div>
             <span class="event-item-priority">{{ event.priority }} </span>
-            <span class="event-item-close" ng-click="updateEventForm(event); $event.stopPropagation();" ng-if="!manageOff">update</span>
-            <span class="event-item-close" ng-click="deleteEvent(event); $event.stopPropagation();" ng-if="!manageOff">x</span>
+            <span class="event-item-control" ng-click="updateEventForm(event); $event.stopPropagation();" ng-if="!manageOff"><i class="material-icons">mode_edit</i></span>
+            <span class="event-item-control" ng-click="deleteEvent(event); $event.stopPropagation();" ng-if="!manageOff"><i class="material-icons">delete</i></span>
           </div>
         </div>
       </div>
